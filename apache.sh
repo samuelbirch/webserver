@@ -16,7 +16,7 @@ read adminEmail
 
 httpd=2.4.23
 apr=1.5.2
-apr-util=1.5.4
+aprutil=1.5.4
 openssl=1.0.2h
 nghttp2=1.14.0
 mod_http2=1.6.1
@@ -43,8 +43,8 @@ tar -zxvf httpd-$httpd.tar.gz
 wget http://mirror.catn.com/pub/apache//apr/apr-$apr.tar.gz
 tar -zxvf apr-$apr.tar.gz
 
-wget http://mirror.catn.com/pub/apache//apr/apr-util-$apr-util.tar.gz
-tar -zxvf apr-util-$apr-util.tar.gz
+wget http://mirror.catn.com/pub/apache//apr/apr-util-$aprutil.tar.gz
+tar -zxvf apr-util-$aprutil.tar.gz
 
 wget https://www.openssl.org/source/openssl-$openssl.tar.gz
 tar -zxvf openssl-$openssl.tar.gz
@@ -95,7 +95,7 @@ make install
 # Install apr-util
 #------------------------------------------------------------------------------------
 
-cd ~/sources/apr-util-$apr-util
+cd ~/sources/apr-util-$aprutil
 ./configure --with-apr=/usr/local/apr
 make
 make install
@@ -106,7 +106,7 @@ make install
 
 cd ~/sources/httpd-$httpd
 cp -r ../apr-$apr srclib/apr
-cp -r ../apr-util-$apr-util srclib/apr-util
+cp -r ../apr-util-$aprutil srclib/apr-util
 ./configure --with-ssl=/usr/local/ssl --with-pcre=/usr/bin/pcre-config --enable-unique-id --enable-ssl --enable-so --with-included-apr --enable-http2 --with-mpm=event --enable-deflate --enable-proxy --enable-proxy-html --enable-http --enable-expires --enable-unique-id --enable-rewrite --enable-proxy-fcgi
 make
 make install

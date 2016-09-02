@@ -239,6 +239,7 @@ sed -i 's/DirectoryIndex index.html/DirectoryIndex index.php index.html index.ht
 
 sed -i "/Include conf/extra/httpd-mpm.conf/s/^#//g /usr/local/apache2/conf/httpd.conf
 sed -i "/Include conf/extra/httpd-vhosts.conf/s/^#//g /usr/local/apache2/conf/httpd.conf
+sed -i "/Include conf/extra/httpd-ssl.conf/s/^#//g /usr/local/apache2/conf/httpd.conf
 
 echo 'Include conf/extra/httpd-security.conf
 
@@ -453,9 +454,11 @@ service httpd stop
 ./letsencrypt-auto certonly --standalone --w /var/www/html --email $adminEmail -d $serverName
 service httpd start
 
-#------------------------------------------------------------------------------------
-# mod security
-#------------------------------------------------------------------------------------
+sed -i 's/^DocumentRoot.*/DocumentRoot "\/var\/www\/html"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i 's/^ServerName.*/ServerName $serverName:443/' /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i 's/^ServerAdmin.*/ServerAdmin $adminEmail/' /usr/local/apache2/conf/extra/httpd-ssl.conf
 
-cd ~/sources
+sed -i 's/^SSLCertificateFile.*/SSLCertificateFile "/etc/letsencrypt/live/$serverName/cert.pem"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i 's/^SSLCertificateKeyFile.*/SSLCertificateKeyFile "/etc/letsencrypt/live/$serverName/privkey.pem"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i 's/^#SSLCertificateChainFile.*/SSLCertificateChainFile "/etc/letsencrypt/live/$serverName/chain.pem"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
 

@@ -4,10 +4,111 @@
 # Params
 #------------------------------------------------------------------------------------
 
-#echo -e "Hi, please type the word: \c "
-#read  word
-#echo "The word you entered is: $word"
+HOST=$1
+if [ -z ${HOST+x} ]; then
+	echo -e "What is the virtual host: \c "
+	read HOST
+fi
+
+EMAIL=sam@madebyjam.com
 
 #------------------------------------------------------------------------------------
-# Install vsFTPd
+# Setup vhost
 #------------------------------------------------------------------------------------
+
+mkdir /var/www/html/$HOST
+mkdir /var/www/html/$HOST/html
+mkdir /var/www/html/$HOST/logs
+
+#example file
+echo "$HOST" > /var/www/html/$HOST/html/index.html
+
+chown -R apache:www /var/www/html/$HOST
+chmod -R 775 /var/www/html/$HOST
+
+echo "<VirtualHost *:80>
+
+	ServerName $HOST
+
+	<FilesMatch '\.php$'>
+		SetHandler 'proxy:fcgi://127.0.0.1:9000'
+	</FilesMatch>
+
+	DocumentRoot /var/www/html/$HOST/html
+
+	<Directory /var/www/html/$HOST/html>
+		AllowOverride All
+		Require all granted
+		Options +FollowSymLinks +SymLinksIfOwnerMatch
+	</Directory>
+
+	ErrorLog /var/www/html/$HOST/logs/error.log
+	CustomLog /var/www/html/$HOST/logs/access.log common
+
+</VirtualHost>
+
+" > /usr/local/apache2/conf/vhosts/$HOST.conf
+
+service httpd restart
+
+#------------------------------------------------------------------------------------
+# Create SSL
+#------------------------------------------------------------------------------------
+
+/opt/letsencrypt/letsencrypt-auto certonly --webroot Ñ-w /var/www/html/$HOST/html Ñemail $EMAIL -d $HOST
+
+#------------------------------------------------------------------------------------
+# Update vhosts conf
+#------------------------------------------------------------------------------------
+
+echo "<VirtualHost *:443>
+	ServerName $HOST
+	DocumentRoot /var/www/html/$HOST/html
+	ErrorLog /var/www/html/$HOST/logs/error.log
+	CustomLog /var/www/html/$HOST/logs/access.log combined
+
+	SSLEngine on 
+	SSLCertificateFile /etc/letsencrypt/live/$HOST/cert.pem
+	SSLCertificateKeyFile /etc/letsencrypt/live/$HOST/privkey.pem
+	SSLCertificateChainFile /etc/letsencrypt/live/$HOST/chain.pem
+
+</VirtualHost>" >> /usr/local/apache2/conf/vhosts/$HOST.conf
+
+#------------------------------------------------------------------------------------
+# Create FTP
+#------------------------------------------------------------------------------------
+
+echo 'dirlist_enable=YES
+download_enable=YES
+local_root=/var/www/html/$HOST
+write_enable=YES' > /etc/vsftpd/vconf/$HOST
+ 
+echo '$HOST' | tee /etc/vsftpd/password{,-nocrypt} > /dev/null
+ 
+FTP_PASS=$(openssl rand -base64 6)
+echo $FTP_PASS >> /etc/vsftpd/password-nocrypt
+echo $(openssl passwd -crypt $FTP_PASS) >> /etc/vsftpd/password
+ 
+# /etc/vsftpd/password.db
+db_load -T -t hash -f /etc/vsftpd/password /etc/vsftpd/password.db
+
+#------------------------------------------------------------------------------------
+# Create DB & User
+#------------------------------------------------------------------------------------
+
+MYSQL_PASS=$(openssl rand -base64 16)
+MYSQL_USER=${HOST:0:16}
+
+mysql << EOF
+CREATE DATABASE IF NOT EXISTS "$HOST";
+GRANT ALL ON "$HOST".* TO "$MYSQL_USER"@'localhost' IDENTIFIED BY "$MYSQL_PASS";
+FLUSH PRIVILEGES;
+EOF
+exit
+
+#------------------------------------------------------------------------------------
+# Output
+#------------------------------------------------------------------------------------
+
+echo "Your FTP user is $HOST and the password is $FTP_PASS"
+echo "Your MYSQL user is $MYSQL_USER and the password is $MYSQL_PASS"

@@ -34,7 +34,7 @@ mod_security=2.9.1
 
 yum -y update
 yum -y install epel-release
-yum -y install wget gcc pcre-devel openssl-devel nano zlib-devel libxml2-devel automake libtool python-devel lua-devel git
+yum -y install wget gcc pcre-devel openssl-devel nano zlib-devel libxml2-devel automake libtool python-devel lua-devel git cronie crontabs
 
 #------------------------------------------------------------------------------------
 # Download & unzip sources
@@ -280,6 +280,12 @@ sed -i 's/<IfModule mpm_event_module>
 </IfModule>/' /usr/local/apache2/conf/extra/httpd-mpm.conf
 
 #------------------------------------------------------------------------------------
+# setup vhosts
+#------------------------------------------------------------------------------------
+
+mkdir /usr/local/apache2/conf/vhosts
+
+#------------------------------------------------------------------------------------
 # update httpd-security conf
 #------------------------------------------------------------------------------------
 
@@ -470,4 +476,18 @@ sed -i 's/^SSLCertificateKeyFile.*/SSLCertificateKeyFile "/etc/letsencrypt/live/
 sed -i 's/^#SSLCertificateChainFile.*/SSLCertificateChainFile "/etc/letsencrypt/live/$serverName/chain.pem"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
 
 service httpd restart
+
+#------------------------------------------------------------------------------------
+# CRON to auto renew SSL cert
+#------------------------------------------------------------------------------------
+
+#write out current crontab
+crontab -l > mycron
+
+#echo new cron into cron file
+echo "30 2 * * 1 /opt/letsencrypt/letsencrypt-auto renew >> /var/log/le-renew.log" >> mycron
+
+#install new cron file
+crontab mycron
+rm mycron
 

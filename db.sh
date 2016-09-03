@@ -43,7 +43,7 @@ password=$ROOT_PASSWORD" > ~/.my.cnf
 #------------------------------------------------------------------------------------
 
 mysql << EOF
-GRANT ALL ON *.* TO ${MYSQL_USER}@'%' IDENTIFIED BY "$DEFAULT_PASSWORD";
+GRANT ALL ON *.* TO "$MYSQL_USER"@'%' IDENTIFIED BY "$DEFAULT_PASSWORD";
 FLUSH PRIVILEGES;
 EOF
 exit

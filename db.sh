@@ -51,6 +51,6 @@ exit
 
 #echo 'You password for user $MYSQL_USER is $DEFAULT_PASSWORD'
 
-chkconfig firewalld on
+chkconfig mariadb on
 
 echo $DEFAULT_PASSWORD

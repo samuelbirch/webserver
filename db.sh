@@ -33,9 +33,9 @@ echo -e "\n\n$ROOT_PASSWORD\n$ROOT_PASSWORD\n\n\nn\n\n " | mysql_secure_installa
 # add login so loot doesn't have too remember password
 #------------------------------------------------------------------------------------
 
-echo '[client]
+echo "[client]
 user=root
-password=$ROOT_PASSWORD' > ~/.my.cnf
+password=$ROOT_PASSWORD" > ~/.my.cnf
 
 
 #------------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ password=$ROOT_PASSWORD' > ~/.my.cnf
 
 mysql
 
-GRANT ALL ON *.* TO $MYSQL_USER@'%' IDENTIFIED BY '$DEFAULT_PASSWORD';
+GRANT ALL ON *.* TO $MYSQL_USER@'%' IDENTIFIED BY "$DEFAULT_PASSWORD";
 FLUSH PRIVILEGES;
 
 exit

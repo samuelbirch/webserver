@@ -27,7 +27,7 @@ service mariadb start
 # auto secure install
 #------------------------------------------------------------------------------------
 
-echo -e "\n\n$MYSQL_PASSWORD\n$MYSQL_PASSWORD\n\n\nn\n\n " | mysql_secure_installation 2>/dev/null
+echo -e "\n\n$ROOT_PASSWORD\n$ROOT_PASSWORD\n\n\nn\n\n " | mysql_secure_installation 2>/dev/null
 
 #------------------------------------------------------------------------------------
 # add login so loot doesn't have too remember password

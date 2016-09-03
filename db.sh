@@ -42,11 +42,10 @@ password=$ROOT_PASSWORD" > ~/.my.cnf
 # Create default user
 #------------------------------------------------------------------------------------
 
-mysql
-
+mysql << EOF
 GRANT ALL ON *.* TO $MYSQL_USER@'%' IDENTIFIED BY "$DEFAULT_PASSWORD";
 FLUSH PRIVILEGES;
-
+EOF
 exit
 
 #echo 'You password for user $MYSQL_USER is $DEFAULT_PASSWORD'

@@ -4,11 +4,17 @@
 # Params
 #------------------------------------------------------------------------------------
 
-echo -e "What is the server name: \c "
-read serverName
+serverName=$1
+if [ -z ${serverName+x} ]; then
+	echo -e "What is the server name: \c "
+	read serverName
+fi
 
-echo -e "What is the admin email: \c "
-read adminEmail
+adminEmail=$2
+if [ -z ${adminEmail+x} ]; then
+	echo -e "What is the admin email: \c "
+	read adminEmail
+fi
 
 #------------------------------------------------------------------------------------
 # vars
@@ -68,6 +74,7 @@ tar -zxvf owasp.tar.gz -C /usr/local/apache2/conf/crs --strip 1
 
 cd ~/sources/openssl-$openssl
 ./config shared zlib-dynamic
+make depend
 make
 make install
 
@@ -452,7 +459,7 @@ chkconfig httpd on
 
 service httpd stop
 ./letsencrypt-auto certonly --standalone --w /var/www/html --email $adminEmail -d $serverName
-service httpd start
+#service httpd start
 
 sed -i 's/^DocumentRoot.*/DocumentRoot "\/var\/www\/html"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
 sed -i 's/^ServerName.*/ServerName $serverName:443/' /usr/local/apache2/conf/extra/httpd-ssl.conf
@@ -461,4 +468,6 @@ sed -i 's/^ServerAdmin.*/ServerAdmin $adminEmail/' /usr/local/apache2/conf/extra
 sed -i 's/^SSLCertificateFile.*/SSLCertificateFile "/etc/letsencrypt/live/$serverName/cert.pem"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
 sed -i 's/^SSLCertificateKeyFile.*/SSLCertificateKeyFile "/etc/letsencrypt/live/$serverName/privkey.pem"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
 sed -i 's/^#SSLCertificateChainFile.*/SSLCertificateChainFile "/etc/letsencrypt/live/$serverName/chain.pem"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
+
+service httpd restart
 

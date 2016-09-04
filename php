@@ -83,7 +83,7 @@ sed -i "s/^;opcache.fast_shutdown=0/opcache.fast_shutdown=1/g" /usr/local/php/li
 cd /etc/init.d
 cp ~/sources/php-$php/sapi/fpm/init.d.php-fpm php-fpm
 
-sed -i "s/^php_fpm_PID=${prefix}\/var\/run\/php-fpm.pid/php_fpm_PID=\/var\/run\/php-fpm.pid/g /etc/init.d/php-fpm
+sed -i "s/^php_fpm_PID=${prefix}\/var\/run\/php-fpm.pid/php_fpm_PID=\/var\/run\/php-fpm.pid/g" /etc/init.d/php-fpm
 
 chmod +x php-fpm
 service php-fpm start

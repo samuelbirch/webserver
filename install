@@ -4,17 +4,22 @@
 # Params
 #------------------------------------------------------------------------------------
 
-echo -e "What is the server name: \c "
-read serverName
+echo -e "What is the server domain: \c "
+read DOMAIN
+
+echo -e "What is the server name (subdomain): \c "
+read SERVER_NAME
+
+echo -e "What is the mail subdomain: \c "
+read MAIL_DOMAIN
 
 echo -e "What is the admin email: \c "
-read adminEmail
+read ADMIN_EMAIL
 
 echo -e "What is the default user: \c "
 read USER
 
-echo -e "What is the mail domain: \c "
-read MAIL_DOMAIN
+
 
 #------------------------------------------------------------------------------------
 # Vars
@@ -39,7 +44,7 @@ cd ~/scripts
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/apache.sh
-bash apache.sh $serverName $adminEmail
+bash apache.sh $SERVER_NAME.$DOMAIN $ADMIN_EMAIL
 
 #------------------------------------------------------------------------------------
 # Install php
@@ -81,7 +86,7 @@ bash firewall.sh
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/mail.sh
-bash mail.sh $MAIL_DOMAIN
+bash mail.sh $DOMAIN $MAIL_DOMAIN
 
 #------------------------------------------------------------------------------------
 # Download vhost
@@ -94,3 +99,4 @@ wget https://raw.githubusercontent.com/samuelbirch/webserver/master/vhost.sh
 #------------------------------------------------------------------------------------
 
 echo "All done! Your MYSQL password is $MYSQL_DEFAULT_PASS"
+echo "Your FTP root password is $FTP_DEFAULT_PASS"

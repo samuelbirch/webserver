@@ -43,56 +43,56 @@ cd ~/scripts
 # Install apache
 #------------------------------------------------------------------------------------
 
-wget https://raw.githubusercontent.com/samuelbirch/webserver/master/apache.sh
-bash apache.sh $SERVER_NAME.$DOMAIN $ADMIN_EMAIL
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/apache
+bash apache $SERVER_NAME.$DOMAIN $ADMIN_EMAIL
 
 #------------------------------------------------------------------------------------
 # Install php
 #------------------------------------------------------------------------------------
 
-wget https://raw.githubusercontent.com/samuelbirch/webserver/master/php.sh
-bash php.sh
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/php
+bash php
 
 #------------------------------------------------------------------------------------
 # Install db
 #------------------------------------------------------------------------------------
 
-wget https://raw.githubusercontent.com/samuelbirch/webserver/master/db.sh
-MYSQL_DEFAULT_PASS=$(bash db.sh $USER)
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/db
+MYSQL_DEFAULT_PASS=$(bash db $USER)
 
 #------------------------------------------------------------------------------------
 # Install ftp
 #------------------------------------------------------------------------------------
 
-wget https://raw.githubusercontent.com/samuelbirch/webserver/master/ftp.sh
-FTP_DEFAULT_PASS=$(bash ftp.sh $USER)
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/ftp
+FTP_DEFAULT_PASS=$(bash ftp $USER)
 
 #------------------------------------------------------------------------------------
 # Install fail2ban
 #------------------------------------------------------------------------------------
 
-wget https://raw.githubusercontent.com/samuelbirch/webserver/master/fail2ban.sh
-bash fail2ban.sh
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/fail2ban
+bash fail2ban
 
 #------------------------------------------------------------------------------------
 # Install firewall
 #------------------------------------------------------------------------------------
 
-wget https://raw.githubusercontent.com/samuelbirch/webserver/master/firewall.sh
-bash firewall.sh
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/firewall
+bash firewall
 
 #------------------------------------------------------------------------------------
 # Install mail
 #------------------------------------------------------------------------------------
 
-wget https://raw.githubusercontent.com/samuelbirch/webserver/master/mail.sh
-bash mail.sh $DOMAIN $MAIL_DOMAIN
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/mail
+bash mail $DOMAIN $MAIL_DOMAIN
 
 #------------------------------------------------------------------------------------
 # Download vhost
 #------------------------------------------------------------------------------------
 
-wget https://raw.githubusercontent.com/samuelbirch/webserver/master/vhost.sh
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/vhost
 
 #------------------------------------------------------------------------------------
 # Output

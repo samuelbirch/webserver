@@ -38,7 +38,7 @@ cd /usr/local/php/etc
 cp php-fpm.conf.default php-fpm.conf
 
 sed -i "s/^;pid = run\/php-fpm.pid/pid = \/var\/run\/php-fpm.pid/g" /usr/local/php/etc/php-fpm.conf
-sed -i "/error_log = /s/^;//g" /usr/local/php/etc/php-fpm.conf
+sed -i "/error_log =/s/^;//g" /usr/local/php/etc/php-fpm.conf
 
 
 cd php-fpm.d
@@ -83,7 +83,7 @@ sed -i "s/^;opcache.fast_shutdown=0/opcache.fast_shutdown=1/g" /usr/local/php/li
 cd /etc/init.d
 cp ~/sources/php-$php/sapi/fpm/init.d.php-fpm php-fpm
 
-sed -i "s/^php_fpm_PID=${prefix}\/var\/run\/php-fpm.pid/php_fpm_PID=\/var\/run\/php-fpm.pid/g" /etc/init.d/php-fpm
+sed -i 's/^php_fpm_PID=${prefix}\/var\/run\/php-fpm.pid/php_fpm_PID=\/var\/run\/php-fpm.pid/g' /etc/init.d/php-fpm
 
 chmod +x php-fpm
 service php-fpm start
@@ -94,8 +94,8 @@ chkconfig php-fpm on
 # ImageMagick
 #------------------------------------------------------------------------------------
 
-yum install php-pear
-yum install ImageMagick ImageMagick-devel
+yum -y install php-pear
+yum -y install ImageMagick ImageMagick-devel
 pecl install imagick
 
 echo 'extension=imagick.so' >> /usr/local/php/lib/php.ini

@@ -63,7 +63,7 @@ cp ~/sources/php-$php/php.ini-development ./php.ini
 sed -i "s/^short_open_tag = Off/short_open_tag = On/g" /usr/local/php/lib/php.ini
 sed -i "s/^disable_functions.*/disable_functions = exec,passthru,shell_exec,system,proc_open,popen/g" /usr/local/php/lib/php.ini
 sed -i "s/^expose_php = On/expose_php = Off/g" /usr/local/php/lib/php.ini
-sed -i "s/^error_reporting = E_ALL/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/g" /usr/local/php/lib/php.ini
+#sed -i "s/^error_reporting = E_ALL/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/g" /usr/local/php/lib/php.ini
 sed -i "s/^display_errors = On/display_errors = Off/g" /usr/local/php/lib/php.ini
 sed -i "s/^display_startup_errors = On/display_startup_errors = Off/g" /usr/local/php/lib/php.ini
 sed -i "s/^upload_max_filesize = 2M/upload_max_filesize = 4M/g" /usr/local/php/lib/php.ini

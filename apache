@@ -65,8 +65,6 @@ wget https://www.modsecurity.org/tarball/$mod_security/modsecurity-$mod_security
 tar -zxvf modsecurity-$mod_security.tar.gz
 
 wget -O owasp.tar.gz https://github.com/SpiderLabs/owasp-modsecurity-crs/tarball/master
-mkdir /usr/local/apache2/conf/crs
-tar -zxvf owasp.tar.gz -C /usr/local/apache2/conf/crs --strip 1
 
 #------------------------------------------------------------------------------------
 # Install openssl
@@ -156,8 +154,11 @@ cp /usr/local/modsecurity/lib/mod_security2.so /usr/local/apache2/modules
 # install owasp
 #------------------------------------------------------------------------------------
 
-cd /usr/local/apache2/conf/crs
-cp modsecurity_crs_10_setup.conf.example modsecurity_crs_10_setup.conf
+mkdir /usr/local/apache2/conf/crs
+cd ~/sources
+tar -zxvf owasp.tar.gz -C /usr/local/apache2/conf/crs --strip 1
+#cd /usr/local/apache2/conf/crs
+cp /usr/local/apache2/conf/crs/modsecurity_crs_10_setup.conf.example /usr/local/apache2/conf/crs/modsecurity_crs_10_setup.conf
 
 #------------------------------------------------------------------------------------
 # update httpd-security
@@ -244,9 +245,9 @@ sed -i 's/AllowOverride None/AllowOverride All\
 sed -i 's/DirectoryIndex index.html/DirectoryIndex index.php index.html index.htm/' /usr/local/apache2/conf/httpd.conf
 
 
-sed -i "/Include conf/extra/httpd-mpm.conf/s/^#//g /usr/local/apache2/conf/httpd.conf
-sed -i "/Include conf/extra/httpd-vhosts.conf/s/^#//g /usr/local/apache2/conf/httpd.conf
-sed -i "/Include conf/extra/httpd-ssl.conf/s/^#//g /usr/local/apache2/conf/httpd.conf
+sed -i "/Include conf/extra/httpd-mpm.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
+sed -i "/Include conf/extra/httpd-vhosts.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
+sed -i "/Include conf/extra/httpd-ssl.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
 
 echo 'Include conf/extra/httpd-security.conf
 
@@ -344,12 +345,12 @@ service httpd stop
 #service httpd start
 
 sed -i 's/^DocumentRoot.*/DocumentRoot "\/var\/www\/html"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
-sed -i 's/^ServerName.*/ServerName $serverName:443/' /usr/local/apache2/conf/extra/httpd-ssl.conf
-sed -i 's/^ServerAdmin.*/ServerAdmin $adminEmail/' /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^ServerName.*/ServerName $serverName:443/" /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^ServerAdmin.*/ServerAdmin $adminEmail/" /usr/local/apache2/conf/extra/httpd-ssl.conf
 
-sed -i 's/^SSLCertificateFile.*/SSLCertificateFile "/etc/letsencrypt/live/$serverName/cert.pem"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
-sed -i 's/^SSLCertificateKeyFile.*/SSLCertificateKeyFile "/etc/letsencrypt/live/$serverName/privkey.pem"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
-sed -i 's/^#SSLCertificateChainFile.*/SSLCertificateChainFile "/etc/letsencrypt/live/$serverName/chain.pem"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^SSLCertificateFile.*/SSLCertificateFile '/etc/letsencrypt/live/$serverName/cert.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^SSLCertificateKeyFile.*/SSLCertificateKeyFile '/etc/letsencrypt/live/$serverName/privkey.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^#SSLCertificateChainFile.*/SSLCertificateChainFile '/etc/letsencrypt/live/$serverName/chain.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
 
 service httpd restart
 

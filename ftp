@@ -4,8 +4,11 @@
 # Params
 #------------------------------------------------------------------------------------
 
-echo -e "What is the default FTP user: \c "
-read FTP_USER
+FTP_USER=$1
+if [ -z ${MYSQL_USER+x} ]; then
+	echo -e "What is the default FTP user: \c "
+	read FTP_USER
+fi
 
 #------------------------------------------------------------------------------------
 # Install vsFTPd
@@ -61,9 +64,11 @@ write_enable=YES' > /etc/vsftpd/vconf/$FTP_USER
  
 echo '$FTP_USER' | tee /etc/vsftpd/password{,-nocrypt} > /dev/null
  
-myval=$(openssl rand -base64 6)
-echo $myval >> /etc/vsftpd/password-nocrypt
-echo $(openssl passwd -crypt $myval) >> /etc/vsftpd/password
+FTP_PASS=$(openssl rand -base64 6)
+echo $FTP_PASS >> /etc/vsftpd/password-nocrypt
+echo $(openssl passwd -crypt $FTP_PASS) >> /etc/vsftpd/password
  
 # /etc/vsftpd/password.db
 db_load -T -t hash -f /etc/vsftpd/password /etc/vsftpd/password.db
+
+echo $FTP_PASS

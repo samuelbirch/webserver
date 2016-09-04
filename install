@@ -13,11 +13,15 @@ read adminEmail
 echo -e "What is the default user: \c "
 read USER
 
+echo -e "What is the mail domain: \c "
+read MAIL_DOMAIN
+
 #------------------------------------------------------------------------------------
 # Vars
 #------------------------------------------------------------------------------------
 
 MYSQL_DEFAULT_PASS=a
+FTP_DEFAULT_PASS=a
 
 #------------------------------------------------------------------------------------
 # Setup
@@ -35,8 +39,6 @@ cd ~/scripts
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/apache.sh
-#chmod +x apache.sh
-#./apache.sh
 bash apache.sh $serverName $adminEmail
 
 #------------------------------------------------------------------------------------
@@ -44,8 +46,6 @@ bash apache.sh $serverName $adminEmail
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/php.sh
-#chmod +x php.sh
-#./php.sh
 bash php.sh
 
 #------------------------------------------------------------------------------------
@@ -53,9 +53,44 @@ bash php.sh
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/db.sh
-#chmod +x db.sh
-#./db.sh
 MYSQL_DEFAULT_PASS=$(bash db.sh $USER)
 
+#------------------------------------------------------------------------------------
+# Install ftp
+#------------------------------------------------------------------------------------
+
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/ftp.sh
+FTP_DEFAULT_PASS=$(bash ftp.sh $USER)
+
+#------------------------------------------------------------------------------------
+# Install fail2ban
+#------------------------------------------------------------------------------------
+
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/fail2ban.sh
+bash fail2ban.sh
+
+#------------------------------------------------------------------------------------
+# Install firewall
+#------------------------------------------------------------------------------------
+
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/firewall.sh
+bash firewall.sh
+
+#------------------------------------------------------------------------------------
+# Install mail
+#------------------------------------------------------------------------------------
+
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/mail.sh
+bash mail.sh $MAIL_DOMAIN
+
+#------------------------------------------------------------------------------------
+# Download vhost
+#------------------------------------------------------------------------------------
+
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/vhost.sh
+
+#------------------------------------------------------------------------------------
+# Output
+#------------------------------------------------------------------------------------
 
 echo "All done! Your MYSQL password is $MYSQL_DEFAULT_PASS"

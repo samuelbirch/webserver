@@ -4,10 +4,16 @@
 # Params
 #------------------------------------------------------------------------------------
 
-#echo -e "Hi, please type the word: \c "
-#read  word
-#echo "The word you entered is: $word"
+DOMAIN=$1
+if [ -z ${DOMAIN+x} ]; then
+	echo -e "What is the mail domain: \c "
+	read DOMAIN
+fi
 
 #------------------------------------------------------------------------------------
-# Install vsFTPd
+# Install postfix
 #------------------------------------------------------------------------------------
+
+yum -y install postfix
+
+#/etc/postfix/main.cf

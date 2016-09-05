@@ -34,7 +34,7 @@ mod_security=2.9.1
 
 yum -y update
 yum -y install epel-release
-yum -y install wget gcc pcre-devel openssl-devel nano zlib-devel libxml2-devel automake libtool python-devel lua-devel git cronie crontabs
+yum -y install wget perl gcc pcre-devel openssl-devel nano zlib-devel libxml2-devel automake libtool python-devel lua-devel git cronie crontabs
 
 #------------------------------------------------------------------------------------
 # Download & unzip sources

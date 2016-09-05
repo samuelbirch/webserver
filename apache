@@ -71,7 +71,7 @@ wget -O owasp.tar.gz https://github.com/SpiderLabs/owasp-modsecurity-crs/tarball
 #------------------------------------------------------------------------------------
 
 cd ~/sources/openssl-$openssl
-./config shared zlib-dynamic
+./config --prefix=/usr/local --openssldir=/usr/local/ssl shared zlib-dynamic
 make depend
 make
 make install
@@ -245,9 +245,9 @@ sed -i 's/AllowOverride None/AllowOverride All\
 sed -i 's/DirectoryIndex index.html/DirectoryIndex index.php index.html index.htm/' /usr/local/apache2/conf/httpd.conf
 
 
-sed -i "/Include conf/extra/httpd-mpm.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
-sed -i "/Include conf/extra/httpd-vhosts.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
-sed -i "/Include conf/extra/httpd-ssl.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
+sed -i "/Include conf\/extra\/httpd-mpm.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
+sed -i "/Include conf\/extra\/httpd-vhosts.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
+sed -i "/Include conf\/extra\/httpd-ssl.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
 
 echo 'Include conf/extra/httpd-security.conf
 
@@ -264,21 +264,10 @@ Protocols h2 http/1.1' >> /usr/local/apache2/conf/httpd.conf
 
 sed -i 's/PidFile "logs\/httpd.pid"/PidFile "\/var\/run\/httpd.pid"/' /usr/local/apache2/conf/extra/httpd-mpm.conf
 
-sed -i 's/<IfModule mpm_event_module>
-    StartServers             3
-    MinSpareThreads         75
-    MaxSpareThreads        250
-    ThreadsPerChild         25
-    MaxRequestWorkers	   400
-    MaxConnectionsPerChild   0
-</IfModule>/<IfModule mpm_event_module>
-    StartServers             2
-    MinSpareThreads          2
-    MaxSpareThreads          4
-    ThreadsPerChild         25
-    MaxRequestWorkers	   300
-    MaxConnectionsPerChild   0
-</IfModule>/' /usr/local/apache2/conf/extra/httpd-mpm.conf
+sed -i '/StartServers/s/3/2/' /usr/local/apache2/conf/extra/httpd-mpm.conf
+sed -i '/MinSpareThreads/s/75/2/' /usr/local/apache2/conf/extra/httpd-mpm.conf
+sed -i '/MaxSpareThreads/s/250/4/' /usr/local/apache2/conf/extra/httpd-mpm.conf
+sed -i '/MaxRequestWorkers/s/400/300/' /usr/local/apache2/conf/extra/httpd-mpm.conf
 
 #------------------------------------------------------------------------------------
 # setup vhosts
@@ -342,7 +331,7 @@ chkconfig httpd on
 
 service httpd stop
 ./letsencrypt-auto certonly --standalone --w /var/www/html --email $adminEmail -d $serverName
-#service httpd start
+service httpd start
 
 sed -i 's/^DocumentRoot.*/DocumentRoot "\/var\/www\/html"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
 sed -i "s/^ServerName.*/ServerName $serverName:443/" /usr/local/apache2/conf/extra/httpd-ssl.conf

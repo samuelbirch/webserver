@@ -4,29 +4,29 @@
 # Params
 #------------------------------------------------------------------------------------
 
-serverName=$1
-if [ -z ${serverName+x} ]; then
+SERVER_NAME=$1
+if [ -z ${SERVER_NAME+x} ]; then
 	echo -e "What is the server name: \c "
-	read serverName
+	read SERVER_NAME
 fi
 
-adminEmail=$2
-if [ -z ${adminEmail+x} ]; then
+ADMIN_EMAIL=$2
+if [ -z ${ADMIN_EMAIL+x} ]; then
 	echo -e "What is the admin email: \c "
-	read adminEmail
+	read ADMIN_EMAIL
 fi
 
 #------------------------------------------------------------------------------------
 # vars
 #------------------------------------------------------------------------------------
 
-httpd=2.4.23
-apr=1.5.2
-aprutil=1.5.4
-openssl=1.0.2h
-nghttp2=1.14.0
-mod_http2=1.6.1
-mod_security=2.9.1
+HTTPD=2.4.23
+APR=1.5.2
+APRUTIL=1.5.4
+OPENSSL=1.0.2h
+NGHTTP2=1.14.0
+MOD_HTTP2=1.6.1
+MOD_SECURITY=2.9.1
 
 #------------------------------------------------------------------------------------
 # Install packages
@@ -43,26 +43,26 @@ yum -y install wget perl gcc pcre-devel openssl-devel nano zlib-devel libxml2-de
 mkdir ~/sources
 cd ~/sources
 
-wget http://mirror.ox.ac.uk/sites/rsync.apache.org//httpd/httpd-$httpd.tar.gz
-tar -zxvf httpd-$httpd.tar.gz
+wget http://mirror.ox.ac.uk/sites/rsync.apache.org//httpd/httpd-$HTTPD.tar.gz
+tar -zxvf httpd-$HTTPD.tar.gz
 
-wget http://mirror.catn.com/pub/apache//apr/apr-$apr.tar.gz
-tar -zxvf apr-$apr.tar.gz
+wget http://mirror.catn.com/pub/apache//apr/apr-$APR.tar.gz
+tar -zxvf apr-$APR.tar.gz
 
-wget http://mirror.catn.com/pub/apache//apr/apr-util-$aprutil.tar.gz
-tar -zxvf apr-util-$aprutil.tar.gz
+wget http://mirror.catn.com/pub/apache//apr/apr-util-$APRUTIL.tar.gz
+tar -zxvf apr-util-$APRUTIL.tar.gz
 
-wget https://www.openssl.org/source/openssl-$openssl.tar.gz
-tar -zxvf openssl-$openssl.tar.gz
+wget https://www.openssl.org/source/openssl-$OPENSSL.tar.gz
+tar -zxvf openssl-$OPENSSL.tar.gz
 
-wget https://github.com/nghttp2/nghttp2/releases/download/v$nghttp2/nghttp2-$nghttp2.tar.gz
-tar -zxvf nghttp2-$nghttp2.tar.gz
+wget https://github.com/nghttp2/nghttp2/releases/download/v$NGHTTP2/nghttp2-$NGHTTP2.tar.gz
+tar -zxvf nghttp2-$NGHTTP2.tar.gz
 
-wget https://github.com/icing/mod_h2/releases/download/v1.6.1/mod_http2-$mod_http2.tar.gz
-tar -zxvf mod_http2-$mod_http2.tar.gz
+wget https://github.com/icing/mod_h2/releases/download/v1.6.1/mod_http2-$MOD_HTTP2.tar.gz
+tar -zxvf mod_http2-$MOD_HTTP2.tar.gz
 
-wget https://www.modsecurity.org/tarball/$mod_security/modsecurity-$mod_security.tar.gz
-tar -zxvf modsecurity-$mod_security.tar.gz
+wget https://www.modsecurity.org/tarball/$MOD_SECURITY/modsecurity-$MOD_SECURITY.tar.gz
+tar -zxvf modsecurity-$MOD_SECURITY.tar.gz
 
 wget -O owasp.tar.gz https://github.com/SpiderLabs/owasp-modsecurity-crs/tarball/master
 
@@ -70,8 +70,8 @@ wget -O owasp.tar.gz https://github.com/SpiderLabs/owasp-modsecurity-crs/tarball
 # Install openssl
 #------------------------------------------------------------------------------------
 
-cd ~/sources/openssl-$openssl
-./config --prefix=/usr/local --openssldir=/usr/local/ssl shared zlib-dynamic
+cd ~/sources/openssl-$OPENSSL
+./config shared zlib-dynamic
 make depend
 make
 make install
@@ -80,7 +80,7 @@ make install
 # Install http2
 #------------------------------------------------------------------------------------
 
-cd ~/sources/nghttp2-$nghttp2
+cd ~/sources/nghttp2-$NGHTTP2
 export OPENSSL_CFLAGS="-I/usr/local/ssl/include"
 export OPENSSL_LIBS="-L/usr/local/ssl/lib -lssl -lcrypto"
 ./configure
@@ -91,7 +91,7 @@ make install
 # Install apr
 #------------------------------------------------------------------------------------
 
-cd ~/sources/apr-$apr
+cd ~/sources/apr-$APR
 ./configure
 make
 make install
@@ -100,7 +100,7 @@ make install
 # Install apr-util
 #------------------------------------------------------------------------------------
 
-cd ~/sources/apr-util-$aprutil
+cd ~/sources/apr-util-$APRUTIL
 ./configure --with-apr=/usr/local/apr
 make
 make install
@@ -109,9 +109,9 @@ make install
 # Install apache
 #------------------------------------------------------------------------------------
 
-cd ~/sources/httpd-$httpd
-cp -r ../apr-$apr srclib/apr
-cp -r ../apr-util-$aprutil srclib/apr-util
+cd ~/sources/httpd-$HTTPD
+cp -r ../apr-$APR srclib/apr
+cp -r ../apr-util-$APRUTIL srclib/apr-util
 ./configure --with-ssl=/usr/local/ssl --with-pcre=/usr/bin/pcre-config --enable-unique-id --enable-ssl --enable-so --with-included-apr --enable-http2 --with-mpm=event --enable-deflate --enable-proxy --enable-proxy-html --enable-http --enable-expires --enable-unique-id --enable-rewrite --enable-proxy-fcgi
 make
 make install
@@ -120,7 +120,7 @@ make install
 # update mod_http2
 #------------------------------------------------------------------------------------
 
-cd ~/sources/mod_http2-$mod_http2
+cd ~/sources/mod_http2-$MOD_HTTP2
 ./configure --with-apxs=/usr/local/apache2/bin/apxs
 make
 make install
@@ -129,7 +129,7 @@ make install
 # update apache envvars
 #------------------------------------------------------------------------------------
 
-sed -i "s/\/usr\/local\/apache2\/lib/\/usr\/local\/apache2\/lib:\/usr\/local\/lib\/:\/usr\/local\/ssl\/lib/" /usr/local/apache2/bin/envvars
+sed -i 's/\/usr\/local\/apache2\/lib/\/usr\/local\/apache2\/lib:\/usr\/local\/lib:\/usr\/local\/ssl\/lib/' /usr/local/apache2/bin/envvars
 
 #------------------------------------------------------------------------------------
 # install letsencrypt
@@ -143,7 +143,7 @@ cd /opt/letsencrypt
 # install mod security
 #------------------------------------------------------------------------------------
 
-cd ~/sources/modsecurity-$mod_security
+cd ~/sources/modsecurity-$MOD_SECURITY
 ./autogen.sh
 ./configure --with-apxs=/usr/local/apache2/bin/apxs --with-apr=/usr/local/apache2/bin/apr-1-config --with-apu=/usr/local/apache2/bin/apu-1-config
 make
@@ -229,9 +229,9 @@ sed -i "/setenvif_module/s/^#//g" /usr/local/apache2/conf/httpd.conf
 sed -i "s/^User daemon/User apache/g" /usr/local/apache2/conf/httpd.conf
 sed -i "s/^Group daemon/Group www/g" /usr/local/apache2/conf/httpd.conf
 
-sed -i "s/^ServerAdmin.*/ServerAdmin $adminEmail/g" /usr/local/apache2/conf/httpd.conf
+sed -i "s/^ServerAdmin.*/ServerAdmin $ADMIN_EMAIL/g" /usr/local/apache2/conf/httpd.conf
 
-sed -i "s/^#ServerName.*/ServerName $serverName:80/g" /usr/local/apache2/conf/httpd.conf
+sed -i "s/^#ServerName.*/ServerName $SERVER_NAME:80/g" /usr/local/apache2/conf/httpd.conf
 
 sed -i 's/^DocumentRoot "\/usr\/local\/apache2\/htdocs"/DocumentRoot "\/var\/www\/html"/' /usr/local/apache2/conf/httpd.conf
 
@@ -330,16 +330,16 @@ chkconfig httpd on
 #------------------------------------------------------------------------------------
 
 service httpd stop
-./letsencrypt-auto certonly --standalone --w /var/www/html --email $adminEmail -d $serverName
+./letsencrypt-auto certonly --standalone --w /var/www/html --email $ADMIN_EMAIL -d $SERVER_NAME
 service httpd start
 
 sed -i 's/^DocumentRoot.*/DocumentRoot "\/var\/www\/html"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
-sed -i "s/^ServerName.*/ServerName $serverName:443/" /usr/local/apache2/conf/extra/httpd-ssl.conf
-sed -i "s/^ServerAdmin.*/ServerAdmin $adminEmail/" /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^ServerName.*/ServerName $SERVER_NAME:443/" /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^ServerAdmin.*/ServerAdmin $ADMIN_EMAIL/" /usr/local/apache2/conf/extra/httpd-ssl.conf
 
-sed -i "s/^SSLCertificateFile.*/SSLCertificateFile '/etc/letsencrypt/live/$serverName/cert.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
-sed -i "s/^SSLCertificateKeyFile.*/SSLCertificateKeyFile '/etc/letsencrypt/live/$serverName/privkey.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
-sed -i "s/^#SSLCertificateChainFile.*/SSLCertificateChainFile '/etc/letsencrypt/live/$serverName/chain.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^SSLCertificateFile.*/SSLCertificateFile '/etc/letsencrypt/live/$SERVER_NAME/cert.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^SSLCertificateKeyFile.*/SSLCertificateKeyFile '/etc/letsencrypt/live/$SERVER_NAME/privkey.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^#SSLCertificateChainFile.*/SSLCertificateChainFile '/etc/letsencrypt/live/$SERVER_NAME/chain.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
 
 service httpd restart
 

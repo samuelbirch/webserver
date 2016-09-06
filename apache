@@ -354,12 +354,12 @@ chkconfig httpd on
 #------------------------------------------------------------------------------------
 
 #write out current crontab
-crontab -l > mycron
+crontab -u apache -l > mycron
 
 #echo new cron into cron file
 echo "30 2 * * 1 /opt/letsencrypt/letsencrypt-auto renew >> /var/log/le-renew.log" >> mycron
 
 #install new cron file
-crontab mycron
+crontab -u apache mycron
 rm mycron
 

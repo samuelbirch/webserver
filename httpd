@@ -8,7 +8,7 @@
 # processname: httpd
 # config: /etc/httpd/conf/httpd.conf
 # config: /etc/sysconfig/httpd
-# pidfile: /var/run/httpd/httpd.pid
+# pidfile: /var/run/httpd.pid
 #
 ### BEGIN INIT INFO
 # Provides: httpd

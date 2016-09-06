@@ -94,8 +94,10 @@ chkconfig php-fpm on
 # ImageMagick
 #------------------------------------------------------------------------------------
 
-yum -y install php-pear
+yum -y install php-pear php-devel
 yum -y install ImageMagick ImageMagick-devel
-pecl install imagick
+echo "\n" | pecl install imagick
 
 echo 'extension=imagick.so' >> /usr/local/php/lib/php.ini
+
+service httpd restart

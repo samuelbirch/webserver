@@ -30,7 +30,7 @@ service mariadb start
 echo -e "\n\n$ROOT_PASSWORD\n$ROOT_PASSWORD\n\n\nn\n\n " | mysql_secure_installation 2>/dev/null
 
 #------------------------------------------------------------------------------------
-# add login so loot doesn't have too remember password
+# add login so root doesn't have too remember password
 #------------------------------------------------------------------------------------
 
 echo "[client]

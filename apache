@@ -113,14 +113,14 @@ cd ~/sources/httpd-$HTTPD
 cp -r ../apr-$APR srclib/apr
 cp -r ../apr-util-$APRUTIL srclib/apr-util
 #LDFLAGS=-L/usr/local/ssl/lib
-#LDFLAGS=-Wl,-rpath=/usr/local/ssl/lib
+LDFLAGS=-Wl,-rpath=/usr/local/ssl/lib
 ./configure --with-ssl=/usr/local/ssl --with-pcre=/usr/bin/pcre-config --enable-unique-id --enable-ssl --enable-so --with-included-apr --enable-http2 --with-mpm=event --enable-deflate --enable-proxy --enable-proxy-html --enable-http --enable-expires --enable-unique-id --enable-rewrite --enable-proxy-fcgi
 make
 make install
 
-ln -s /usr/local/ssl/lib/libssl.so.1.0.0 /lib64/libssl.so.1.0.0
-ln -s /usr/local/ssl/lib/libcrypto.so.1.0.0 /lib64/libcrypto.so.1.0.0
-ln -s /usr/local/lib/libnghttp2.so.14 /lib64/libnghttp2.so.14
+#ln -s /usr/local/ssl/lib/libssl.so.1.0.0 /lib64/libssl.so.1.0.0
+#ln -s /usr/local/ssl/lib/libcrypto.so.1.0.0 /lib64/libcrypto.so.1.0.0
+#ln -s /usr/local/lib/libnghttp2.so.14 /lib64/libnghttp2.so.14
 
 #------------------------------------------------------------------------------------
 # update mod_http2

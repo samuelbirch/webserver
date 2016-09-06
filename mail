@@ -20,5 +20,5 @@ fi
 # Install postfix
 #------------------------------------------------------------------------------------
 
-yum -y install postfix
+#yum -y install postfix
 

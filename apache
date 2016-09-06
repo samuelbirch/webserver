@@ -34,7 +34,7 @@ MOD_SECURITY=2.9.1
 
 yum -y update
 yum -y install epel-release
-yum -y install wget perl gcc pcre-devel openssl-devel nano zlib-devel libxml2-devel automake libtool python-devel lua-devel git cronie crontabs
+yum -y install wget perl gcc pcre-devel openssl-devel nano zlib-devel libxml2-devel automake libtool python-devel lua-devel git cronie crontabs psmisc
 
 #------------------------------------------------------------------------------------
 # Download & unzip sources
@@ -112,16 +112,15 @@ make install
 cd ~/sources/httpd-$HTTPD
 cp -r ../apr-$APR srclib/apr
 cp -r ../apr-util-$APRUTIL srclib/apr-util
-LDFLAGS=-L/usr/local/ssl/lib
+#LDFLAGS=-L/usr/local/ssl/lib
 #LDFLAGS=-Wl,-rpath=/usr/local/ssl/lib
 ./configure --with-ssl=/usr/local/ssl --with-pcre=/usr/bin/pcre-config --enable-unique-id --enable-ssl --enable-so --with-included-apr --enable-http2 --with-mpm=event --enable-deflate --enable-proxy --enable-proxy-html --enable-http --enable-expires --enable-unique-id --enable-rewrite --enable-proxy-fcgi
 make
 make install
 
-
-
-# ln -s /usr/local/ssl/lib/libssl.so.1.0.0 /lib64/libssl.so.1.0.0
-# ln -s /usr/local/ssl/lib/libcrypto.so.1.0.0 /lib64/libcrypto.so.1.0.0
+ln -s /usr/local/ssl/lib/libssl.so.1.0.0 /lib64/libssl.so.1.0.0
+ln -s /usr/local/ssl/lib/libcrypto.so.1.0.0 /lib64/libcrypto.so.1.0.0
+ln -s /usr/local/lib/libnghttp2.so.14 /lib64/libnghttp2.so.14
 
 #------------------------------------------------------------------------------------
 # update mod_http2
@@ -143,8 +142,6 @@ sed -i 's/\/usr\/local\/apache2\/lib/\/usr\/local\/apache2\/lib:\/usr\/local\/li
 #------------------------------------------------------------------------------------
 
 git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
-#cd /opt/letsencrypt
-#./letsencrypt-auto
 /opt/letsencrypt/letsencrypt-auto
 
 #------------------------------------------------------------------------------------
@@ -165,7 +162,6 @@ cp /usr/local/modsecurity/lib/mod_security2.so /usr/local/apache2/modules
 mkdir /usr/local/apache2/conf/crs
 cd ~/sources
 tar -zxvf owasp.tar.gz -C /usr/local/apache2/conf/crs --strip 1
-#cd /usr/local/apache2/conf/crs
 cp /usr/local/apache2/conf/crs/modsecurity_crs_10_setup.conf.example /usr/local/apache2/conf/crs/modsecurity_crs_10_setup.conf
 
 #------------------------------------------------------------------------------------
@@ -254,7 +250,6 @@ sed -i 's/DirectoryIndex index.html/DirectoryIndex index.php index.html index.ht
 
 
 sed -i "/Include conf\/extra\/httpd-mpm.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
-#sed -i "/Include conf\/extra\/httpd-vhosts.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
 sed -i "/Include conf\/extra\/httpd-ssl.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
 
 echo 'Include conf/extra/httpd-security.conf
@@ -332,8 +327,6 @@ echo '/var/www/html/*/logs/*.log {
 }' > /etc/logrotate.d/httpd
 
 
-chkconfig httpd on
-
 #------------------------------------------------------------------------------------
 # create cert for server
 #------------------------------------------------------------------------------------
@@ -350,7 +343,11 @@ sed -i "s/^SSLCertificateFile.*/SSLCertificateFile '\/etc\/letsencrypt\/live\/$S
 sed -i "s/^SSLCertificateKeyFile.*/SSLCertificateKeyFile '\/etc\/letsencrypt\/live\/$SERVER_NAME\/privkey.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
 sed -i "s/^#SSLCertificateChainFile.*/SSLCertificateChainFile '\/etc\/letsencrypt\/live\/$SERVER_NAME\/chain.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
 
-service httpd restart
+service httpd stop
+killall -9 -v httpd
+service httpd start
+
+chkconfig httpd on
 
 #------------------------------------------------------------------------------------
 # CRON to auto renew SSL cert

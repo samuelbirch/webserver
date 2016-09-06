@@ -258,7 +258,7 @@ sed -i "/Include conf\/extra\/httpd-mpm.conf/s/^#//g" /usr/local/apache2/conf/ht
 sed -i "/Include conf\/extra\/httpd-ssl.conf/s/^#//g" /usr/local/apache2/conf/httpd.conf
 
 echo 'Include conf/extra/httpd-security.conf
-Include conf/vhosts/*.conf
+IncludeOptional conf/vhosts/*.conf
 
 <IfModule http2_module>
     LogLevel http2:info
@@ -308,9 +308,9 @@ chown -R apache:www /usr/local/apache2
 # update httpd bash
 #------------------------------------------------------------------------------------
 
-//wget https://raw.githubusercontent.com/samuelbirch/webserver/master/httpd -P /etc/init.d
+wget https://raw.githubusercontent.com/samuelbirch/webserver/master/httpd -P /etc/init.d
 
-//chmod +x /etc/init.d/httpd
+chmod +x /etc/init.d/httpd
 
 service httpd restart
 

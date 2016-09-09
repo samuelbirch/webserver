@@ -125,9 +125,9 @@ make
 make install
 #wait %1
 
-#ln -s /usr/local/ssl/lib/libssl.so.1.0.0 /lib64/libssl.so.1.0.0
-#ln -s /usr/local/ssl/lib/libcrypto.so.1.0.0 /lib64/libcrypto.so.1.0.0
-#ln -s /usr/local/lib/libnghttp2.so.14 /lib64/libnghttp2.so.14
+ln -s /usr/local/ssl/lib/libssl.so.1.0.0 /lib64/libssl.so.1.0.0
+ln -s /usr/local/ssl/lib/libcrypto.so.1.0.0 /lib64/libcrypto.so.1.0.0
+ln -s /usr/local/lib/libnghttp2.so.14 /lib64/libnghttp2.so.14
 
 #------------------------------------------------------------------------------------
 # update mod_http2
@@ -342,7 +342,7 @@ echo '/var/www/html/*/logs/*.log {
 #------------------------------------------------------------------------------------
 
 service httpd stop
-/opt/letsencrypt/letsencrypt-auto certonly --standalone --agree-tos --webroot-path /var/www/html --email $ADMIN_EMAIL -d $SERVER_NAME
+/opt/letsencrypt/letsencrypt-auto certonly --staging --standalone --agree-tos --webroot-path /var/www/html --email $ADMIN_EMAIL -d $SERVER_NAME
 service httpd start
 
 sed -i 's/^DocumentRoot.*/DocumentRoot "\/var\/www\/html"/' /usr/local/apache2/conf/extra/httpd-ssl.conf

@@ -5,13 +5,15 @@
 #------------------------------------------------------------------------------------
 
 SERVER_NAME=$1
-if [ -z ${SERVER_NAME+x} ]; then
+if [ -z $SERVER_NAME ] 
+then
 	echo -e "What is the server name: \c "
 	read SERVER_NAME
 fi
 
 ADMIN_EMAIL=$2
-if [ -z ${ADMIN_EMAIL+x} ]; then
+if [ -z $ADMIN_EMAIL ] 
+then
 	echo -e "What is the admin email: \c "
 	read ADMIN_EMAIL
 fi

@@ -5,7 +5,8 @@
 #------------------------------------------------------------------------------------
 
 HOST=$1
-if [ -z ${HOST+x} ]; then
+if [ -z $HOST ] 
+then
 	echo -e "What is the virtual host: \c "
 	read HOST
 fi

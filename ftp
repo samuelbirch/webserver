@@ -5,7 +5,8 @@
 #------------------------------------------------------------------------------------
 
 FTP_USER=$1
-if [ -z ${MYSQL_USER+x} ]; then
+if [ -z $MYSQL_USER ] 
+then
 	echo -e "What is the default FTP user: \c "
 	read FTP_USER
 fi

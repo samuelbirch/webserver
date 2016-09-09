@@ -12,7 +12,8 @@ then
 fi
 
 MAIL_DOMAIN=$2
-if [ -z ${MAIL_DOMAIN+x} ]; then
+if [ -z $MAIL_DOMAIN ]
+then
 	echo -e "What is the mail subdomain: \c "
 	read MAIL_DOMAIN
 fi
@@ -21,5 +22,5 @@ fi
 # Install postfix
 #------------------------------------------------------------------------------------
 
-#yum -y install postfix
+yum -y install postfix
 

@@ -75,7 +75,7 @@ cd ~/sources/openssl-$OPENSSL
 make depend
 make
 make install
-wait %1
+#wait %1
 
 #------------------------------------------------------------------------------------
 # Install http2
@@ -87,7 +87,7 @@ export OPENSSL_LIBS="-L/usr/local/ssl/lib -lssl -lcrypto"
 ./configure
 make
 make install
-wait %1
+#wait %1
 
 #------------------------------------------------------------------------------------
 # Install apr
@@ -97,7 +97,7 @@ cd ~/sources/apr-$APR
 ./configure
 make
 make install
-wait %1
+#wait %1
 
 #------------------------------------------------------------------------------------
 # Install apr-util
@@ -107,7 +107,7 @@ cd ~/sources/apr-util-$APRUTIL
 ./configure --with-apr=/usr/local/apr
 make
 make install
-wait %1
+#wait %1
 
 #------------------------------------------------------------------------------------
 # Install apache
@@ -121,7 +121,7 @@ LDFLAGS=-Wl,-rpath=/usr/local/ssl/lib
 ./configure --with-ssl=/usr/local/ssl --with-pcre=/usr/bin/pcre-config --enable-unique-id --enable-ssl --enable-so --with-included-apr --enable-http2 --with-mpm=event --enable-deflate --enable-proxy --enable-proxy-html --enable-http --enable-expires --enable-unique-id --enable-rewrite --enable-proxy-fcgi
 make
 make install
-wait %1
+#wait %1
 
 #ln -s /usr/local/ssl/lib/libssl.so.1.0.0 /lib64/libssl.so.1.0.0
 #ln -s /usr/local/ssl/lib/libcrypto.so.1.0.0 /lib64/libcrypto.so.1.0.0
@@ -135,7 +135,7 @@ cd ~/sources/mod_http2-$MOD_HTTP2
 ./configure --with-apxs=/usr/local/apache2/bin/apxs
 make
 make install
-wait %1
+#wait %1
 
 #------------------------------------------------------------------------------------
 # update apache envvars
@@ -149,7 +149,7 @@ sed -i 's/\/usr\/local\/apache2\/lib/\/usr\/local\/apache2\/lib:\/usr\/local\/li
 
 git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
 /opt/letsencrypt/letsencrypt-auto
-wait %1
+#wait %1
 
 #------------------------------------------------------------------------------------
 # install mod security
@@ -160,7 +160,7 @@ cd ~/sources/modsecurity-$MOD_SECURITY
 ./configure --with-apxs=/usr/local/apache2/bin/apxs --with-apr=/usr/local/apache2/bin/apr-1-config --with-apu=/usr/local/apache2/bin/apu-1-config
 make
 make install
-wait %1
+#wait %1
 cp /usr/local/modsecurity/lib/mod_security2.so /usr/local/apache2/modules
 
 #------------------------------------------------------------------------------------

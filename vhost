@@ -56,15 +56,32 @@ service httpd restart
 # Create SSL
 #------------------------------------------------------------------------------------
 
-/opt/letsencrypt/letsencrypt-auto certonly --staging --agree-tos --webroot-path /var/www/html/$HOST/html --email $EMAIL -d $HOST
+/opt/letsencrypt/letsencrypt-auto certonly --staging --agree-tos --webroot --webroot-path /var/www/html/$HOST/html --email $EMAIL -d $HOST
 
 #------------------------------------------------------------------------------------
 # Update vhosts conf
 #------------------------------------------------------------------------------------
 
-echo "<VirtualHost *:443>
+echo "<VirtualHost *:80>
 	ServerName $HOST
+	Redirect permanent / https://$HOST
+</VirtualHost>
+
+<VirtualHost *:443>
+	ServerName $HOST
+	
+	<FilesMatch '\.php$'>
+		SetHandler 'proxy:fcgi://127.0.0.1:9000'
+	</FilesMatch>
+	
 	DocumentRoot /var/www/html/$HOST/html
+	
+	<Directory /var/www/html/$HOST/html>
+		AllowOverride All
+		Require all granted
+		Options +FollowSymLinks +SymLinksIfOwnerMatch
+	</Directory>
+	
 	ErrorLog /var/www/html/$HOST/logs/error.log
 	CustomLog /var/www/html/$HOST/logs/access.log combined
 
@@ -73,7 +90,7 @@ echo "<VirtualHost *:443>
 	SSLCertificateKeyFile /etc/letsencrypt/live/$HOST/privkey.pem
 	SSLCertificateChainFile /etc/letsencrypt/live/$HOST/chain.pem
 
-</VirtualHost>" >> /usr/local/apache2/conf/vhosts/$HOST.conf
+</VirtualHost>" > /usr/local/apache2/conf/vhosts/$HOST.conf
 
 #------------------------------------------------------------------------------------
 # Create FTP

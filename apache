@@ -4,14 +4,22 @@
 # Params
 #------------------------------------------------------------------------------------
 
-SERVER_NAME=$1
+
+DOMAIN=$1
+if [ -z $DOMAIN ] 
+then
+	echo -e "What is the domain name: \c "
+	read DOMAIN
+fi
+
+SERVER_NAME=$2
 if [ -z $SERVER_NAME ] 
 then
 	echo -e "What is the server name: \c "
 	read SERVER_NAME
 fi
 
-ADMIN_EMAIL=$2
+ADMIN_EMAIL=$3
 if [ -z $ADMIN_EMAIL ] 
 then
 	echo -e "What is the admin email: \c "
@@ -220,6 +228,7 @@ chown -R apache:www /usr/local/apache2
 
 mkdir /var/www
 mkdir /var/www/html
+mkdir /var/www/html/logs
 chown -R apache:www /var/www/html
 chmod -R 775 /var/www/html
 
@@ -245,7 +254,7 @@ sed -i "s/^Group daemon/Group www/g" /usr/local/apache2/conf/httpd.conf
 
 sed -i "s/^ServerAdmin.*/ServerAdmin $ADMIN_EMAIL/g" /usr/local/apache2/conf/httpd.conf
 
-sed -i "s/^#ServerName.*/ServerName $SERVER_NAME:80/g" /usr/local/apache2/conf/httpd.conf
+sed -i "s/^#ServerName.*/ServerName $SERVER_NAME.$DOMAIN:80/g" /usr/local/apache2/conf/httpd.conf
 
 sed -i 's/^DocumentRoot "\/usr\/local\/apache2\/htdocs"/DocumentRoot "\/var\/www\/html"/' /usr/local/apache2/conf/httpd.conf
 
@@ -342,16 +351,16 @@ echo '/var/www/html/*/logs/*.log {
 #------------------------------------------------------------------------------------
 
 service httpd stop
-/opt/letsencrypt/letsencrypt-auto certonly --staging --standalone --agree-tos --webroot-path /var/www/html --email $ADMIN_EMAIL -d $SERVER_NAME
+/opt/letsencrypt/letsencrypt-auto certonly --staging --standalone --agree-tos --webroot-path /var/www/html --email $ADMIN_EMAIL -d $SERVER_NAME.$DOMAIN
 service httpd start
 
 sed -i 's/^DocumentRoot.*/DocumentRoot "\/var\/www\/html"/' /usr/local/apache2/conf/extra/httpd-ssl.conf
-sed -i "s/^ServerName.*/ServerName $SERVER_NAME:443/" /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^ServerName.*/ServerName $SERVER_NAME.$DOMAIN:443/" /usr/local/apache2/conf/extra/httpd-ssl.conf
 sed -i "s/^ServerAdmin.*/ServerAdmin $ADMIN_EMAIL/" /usr/local/apache2/conf/extra/httpd-ssl.conf
 
-sed -i "s/^SSLCertificateFile.*/SSLCertificateFile '\/etc\/letsencrypt\/live\/$SERVER_NAME\/cert.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
-sed -i "s/^SSLCertificateKeyFile.*/SSLCertificateKeyFile '\/etc\/letsencrypt\/live\/$SERVER_NAME\/privkey.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
-sed -i "s/^#SSLCertificateChainFile.*/SSLCertificateChainFile '\/etc\/letsencrypt\/live\/$SERVER_NAME\/chain.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^SSLCertificateFile.*/SSLCertificateFile '\/etc\/letsencrypt\/live\/$SERVER_NAME.$DOMAIN\/cert.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^SSLCertificateKeyFile.*/SSLCertificateKeyFile '\/etc\/letsencrypt\/live\/$SERVER_NAME.$DOMAIN\/privkey.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
+sed -i "s/^#SSLCertificateChainFile.*/SSLCertificateChainFile '\/etc\/letsencrypt\/live\/$SERVER_NAME.$DOMAIN\/chain.pem'/" /usr/local/apache2/conf/extra/httpd-ssl.conf
 
 service httpd stop
 killall -9 -v httpd
@@ -367,7 +376,7 @@ chkconfig httpd on
 crontab -u apache -l > mycron
 
 #echo new cron into cron file
-echo "30 2 * * 1 /opt/letsencrypt/letsencrypt-auto renew >> /var/log/le-renew.log" >> mycron
+echo "30 2 * * 1 /opt/letsencrypt/letsencrypt-auto renew --agree-tos >> /var/log/le-renew.log" >> mycron
 
 #install new cron file
 crontab -u apache mycron

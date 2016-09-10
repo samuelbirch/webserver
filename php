@@ -25,8 +25,8 @@ cd ~/sources/php-$php
 # Install php
 #------------------------------------------------------------------------------------
 
-./configure --prefix=/usr/local/php --enable-fpm --enable-mbstring --enable-zip --enable-bcmath --enable-ftp --enable-exif --enable-sysvmsg --enable-sysvsem --enable-sysvshm --with-curl --with-mcrypt --with-gd --with-jpeg-dir --with-png-dir --with-zlib-dir --with-freetype-dir --enable-gd-native-ttf --with-pdo-mysql --with-zlib --with-bz2 --with-mysqli --enable-soap --with-xmlrpc --with-kerberos --enable-sockets --with-pcre-regex --enable-calendar --with-imap-ssl --with-mhash --enable-mysqlnd --enable-inline-optimization --enable-mbregex --enable-opcache --with-iconv --with-mysql-sock=/var/lib/mysql/mysql.sock 
-
+./configure --prefix=/usr/local/php --enable-fpm --enable-mbstring --enable-zip --enable-bcmath --enable-ftp --enable-exif --enable-sysvmsg --enable-sysvsem --enable-sysvshm --with-curl --with-mcrypt --with-gd --with-jpeg-dir --with-png-dir --with-zlib-dir --with-freetype-dir --enable-gd-native-ttf --with-pdo-mysql --with-zlib --with-bz2 --with-mysqli --enable-soap --with-xmlrpc --with-kerberos --enable-sockets --with-pcre-regex --enable-calendar --with-imap --with-imap-ssl --with-mhash --enable-mysqlnd --enable-inline-optimization --enable-mbregex --enable-opcache --with-iconv --with-mysql-sock=/var/lib/mysql/mysql.sock 
+#--with-libdir=lib64
 make
 make install
 
@@ -50,8 +50,8 @@ sed -i "s/^group = nobody/group = www/g" /usr/local/php/etc/php-fpm.d/www.conf
 sed -i "s/^;slowlog.*/slowlog = \/var\/www\/html\/logs\/php-fpm.slow.log/g" /usr/local/php/etc/php-fpm.d/www.conf
 sed -i "s/^;request_slowlog_timeout.*/request_slowlog_timeout = 30s/g" /usr/local/php/etc/php-fpm.d/www.conf
 sed -i "/catch_workers_output/s/^;//g" /usr/local/php/etc/php-fpm.d/www.conf
-sed -i "/[log_errors]/s/^;//g" /usr/local/php/etc/php-fpm.d/www.conf
-sed -i "s/^;php_admin_value[memory_limit]/php_admin_value[memory_limit] = 64M/g" /usr/local/php/etc/php-fpm.d/www.conf
+sed -i "/\[log_errors\]/s/^;//g" /usr/local/php/etc/php-fpm.d/www.conf
+sed -i "s/^;php_admin_value\[memory_limit\].*/php_admin_value\[memory_limit\] = 64M/g" /usr/local/php/etc/php-fpm.d/www.conf
 
 #------------------------------------------------------------------------------------
 # config php.ini

@@ -44,7 +44,7 @@ cd ~/scripts
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/apache
-bash apache $SERVER_NAME.$DOMAIN $ADMIN_EMAIL
+bash apache $DOMAIN $SERVER_NAME $ADMIN_EMAIL
 
 #------------------------------------------------------------------------------------
 # Install php

@@ -14,8 +14,8 @@ fi
 touch ~/.rnd
 set RANDFILE=~/.rnd
 
-ROOT_PASSWORD=$(openssl rand -base64 16)
-DEFAULT_PASSWORD=$(openssl rand -base64 16)
+ROOT_PASSWORD=$(openssl rand -base64 12)
+DEFAULT_PASSWORD=$(openssl rand -base64 12)
 
 #------------------------------------------------------------------------------------
 # Install

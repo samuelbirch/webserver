@@ -5,10 +5,17 @@
 #------------------------------------------------------------------------------------
 
 FTP_USER=$1
-if [ -z $MYSQL_USER ] 
+if [ -z $FTP_USER ] 
 then
 	echo -e "What is the default FTP user: \c "
 	read FTP_USER
+fi
+
+SERVER_NAME=$2
+if [ -z $SERVER_NAME ] 
+then
+	echo -e "What is the full server name: \c "
+	read SERVER_NAME
 fi
 
 #------------------------------------------------------------------------------------
@@ -24,6 +31,7 @@ yum -y install vsftpd
 useradd -s /sbin/nologin -d /var/www/html vsftpd
 chown -R vsftpd:vsftpd /var/www/html
 
+mkdir -p /etc/vsftpd/vconf
 cp /etc/vsftpd/vsftpd.conf{,.original}
  
 sed -i "s/^.*anonymous_enable.*/anonymous_enable=NO/g" /etc/vsftpd/vsftpd.conf
@@ -41,6 +49,29 @@ local_root=/var/www/html
 user_sub_token=$USER
 virtual_use_local_privs=YES
 user_config_dir=/etc/vsftpd/vconf' >> /etc/vsftpd/vsftpd.conf
+
+
+echo "
+rsa_cert_file=/etc/letsencrypt/live/$SERVER_NAME/cert.pem
+rsa_private_key_file=/etc/letsencrypt/live/$SERVER_NAME/privkey.pem
+
+ssl_enable=YES
+allow_anon_ssl=NO
+force_local_data_ssl=YES
+force_local_logins_ssl=YES
+
+ssl_tlsv1=YES
+ssl_sslv2=NO
+ssl_sslv3=NO
+
+require_ssl_reuse=NO
+ssl_ciphers=HIGH" >> /etc/vsftpd/vsftpd.conf
+
+
+
+
+systemctl start vsftpd.service
+systemctl enable vsftpd.service
 
 #------------------------------------------------------------------------------------
 # Configure pam
@@ -63,7 +94,7 @@ download_enable=YES
 local_root=/var/www/html
 write_enable=YES' > /etc/vsftpd/vconf/$FTP_USER
  
-echo '$FTP_USER' | tee /etc/vsftpd/password{,-nocrypt} > /dev/null
+echo "$FTP_USER" | tee /etc/vsftpd/password{,-nocrypt} > /dev/null
  
 FTP_PASS=$(openssl rand -base64 6)
 echo $FTP_PASS >> /etc/vsftpd/password-nocrypt

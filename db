@@ -28,7 +28,7 @@ service mariadb start
 # auto secure install
 #------------------------------------------------------------------------------------
 
-echo -e "\n\n$ROOT_PASSWORD\n$ROOT_PASSWORD\n\n\nn\n\n " | mysql_secure_installation 2>/dev/null
+echo -e "\n\n$ROOT_PASSWORD\n$ROOT_PASSWORD\n\n\n\n\n " | mysql_secure_installation 2>/dev/null
 
 #------------------------------------------------------------------------------------
 # add login so root doesn't have too remember password

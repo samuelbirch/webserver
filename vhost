@@ -56,7 +56,7 @@ service httpd restart
 # Create SSL
 #------------------------------------------------------------------------------------
 
-/opt/letsencrypt/letsencrypt-auto certonly --webroot Ñ-w /var/www/html/$HOST/html Ñemail $EMAIL -d $HOST
+/opt/letsencrypt/letsencrypt-auto certonly --staging --agree-tos --webroot-path /var/www/html/$HOST/html --email $EMAIL -d $HOST
 
 #------------------------------------------------------------------------------------
 # Update vhosts conf
@@ -84,7 +84,7 @@ download_enable=YES
 local_root=/var/www/html/$HOST
 write_enable=YES' > /etc/vsftpd/vconf/$HOST
  
-echo '$HOST' | tee /etc/vsftpd/password{,-nocrypt} > /dev/null
+echo "$HOST" | tee /etc/vsftpd/password{,-nocrypt} > /dev/null
  
 FTP_PASS=$(openssl rand -base64 6)
 echo $FTP_PASS >> /etc/vsftpd/password-nocrypt
@@ -105,7 +105,7 @@ CREATE DATABASE IF NOT EXISTS "$HOST";
 GRANT ALL ON "$HOST".* TO "$MYSQL_USER"@'localhost' IDENTIFIED BY "$MYSQL_PASS";
 FLUSH PRIVILEGES;
 EOF
-exit
+#exit
 
 #------------------------------------------------------------------------------------
 # Output

@@ -65,7 +65,7 @@ MYSQL_DEFAULT_PASS=$(bash db $USER)
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/ftp
-FTP_DEFAULT_PASS=$(bash ftp $USER)
+FTP_DEFAULT_PASS=$(bash ftp $USER $SERVER_NAME.$DOMAIN)
 
 #------------------------------------------------------------------------------------
 # Install fail2ban

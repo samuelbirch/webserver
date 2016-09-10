@@ -25,8 +25,7 @@ cd ~/sources/php-$php
 # Install php
 #------------------------------------------------------------------------------------
 
-./configure --prefix=/usr/local/php --enable-fpm --enable-mbstring --enable-zip --enable-bcmath --enable-ftp --enable-exif --enable-sysvmsg --enable-sysvsem --enable-sysvshm --with-curl --with-mcrypt --with-gd --with-jpeg-dir --with-png-dir --with-zlib-dir --with-freetype-dir --enable-gd-native-ttf --with-pdo-mysql --with-zlib --with-bz2 --with-mysqli --enable-soap --with-xmlrpc --with-kerberos --enable-sockets --with-pcre-regex --enable-calendar --with-imap --with-imap-ssl --with-mhash --enable-mysqlnd --enable-inline-optimization --enable-mbregex --enable-opcache --with-iconv --with-mysql-sock=/var/lib/mysql/mysql.sock 
-#--with-libdir=lib64
+./configure --prefix=/usr/local/php --enable-fpm --enable-mbstring --enable-zip --enable-bcmath --enable-ftp --enable-exif --enable-sysvmsg --enable-sysvsem --enable-sysvshm --with-curl --with-mcrypt --with-gd --with-jpeg-dir --with-png-dir --with-zlib-dir --with-freetype-dir --enable-gd-native-ttf --with-pdo-mysql --with-zlib --with-bz2 --with-mysqli --enable-soap --with-xmlrpc --with-kerberos --enable-sockets --with-pcre-regex --enable-calendar --with-imap --with-imap-ssl --with-mhash --enable-mysqlnd --enable-inline-optimization --enable-mbregex --enable-opcache --with-iconv --with-mysql-sock=/var/lib/mysql/mysql.sock --with-libdir=lib64
 make
 make install
 
@@ -67,7 +66,7 @@ sed -i "s/^expose_php = On/expose_php = Off/g" /usr/local/php/lib/php.ini
 sed -i "s/^display_errors = On/display_errors = Off/g" /usr/local/php/lib/php.ini
 sed -i "s/^display_startup_errors = On/display_startup_errors = Off/g" /usr/local/php/lib/php.ini
 sed -i "s/^upload_max_filesize = 2M/upload_max_filesize = 4M/g" /usr/local/php/lib/php.ini
-sed -i "s/^;date.timezone.*/date.timezone = Europe/London/g" /usr/local/php/lib/php.ini
+sed -i "s/^;date.timezone.*/date.timezone = Europe\/London/g" /usr/local/php/lib/php.ini
 
 sed -i "s/^;opcache.enable=0/opcache.enable=1/g" /usr/local/php/lib/php.ini
 sed -i "/opcache.memory_consumption/s/^;//g" /usr/local/php/lib/php.ini
@@ -99,5 +98,7 @@ yum -y install ImageMagick ImageMagick-devel
 echo "\n" | pecl install imagick
 
 echo 'extension=imagick.so' >> /usr/local/php/lib/php.ini
+
+#ln -s /usr/lib64/php/modules/imagick.so /usr/local/php/lib/php/extensions/no-debug-non-zts-20151012/imagick.so
 
 service httpd restart

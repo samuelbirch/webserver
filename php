@@ -4,7 +4,8 @@
 # Vars
 #------------------------------------------------------------------------------------
 
-php=7.0.10
+PHP=7.0.10
+IMAGICK=3.4.3RC1
 
 #------------------------------------------------------------------------------------
 # Install packages
@@ -17,9 +18,9 @@ yum -y install bzip2-devel curl-devel libjpeg-devel libpng-devel freetype-devel 
 #------------------------------------------------------------------------------------
 
 cd ~/sources
-wget -O php-$php.tar.gz http://uk1.php.net/get/php-$php.tar.gz/from/this/mirror
-tar -zxvf php-$php.tar.gz
-cd ~/sources/php-$php
+wget -O php-$PHP.tar.gz http://uk1.php.net/get/php-$PHP.tar.gz/from/this/mirror
+tar -zxvf php-$PHP.tar.gz
+cd ~/sources/php-$PHP
 
 #------------------------------------------------------------------------------------
 # Install php
@@ -93,12 +94,17 @@ chkconfig php-fpm on
 # ImageMagick
 #------------------------------------------------------------------------------------
 
-yum -y install php-pear php-devel
-yum -y install ImageMagick ImageMagick-devel
-echo "\n" | pecl install imagick
+yum -y install php-devel ImageMagick-devel
+cd ~/sources
+wget https://pecl.php.net/get/imagick-$IMAGICK.tgz
+tar -zxvf imagick-$IMAGICK.tgz
+cd ~/sources/imagick-$IMAGICK
+phpize
+./configure --with-php-config=/usr/local/php/bin/php-config
+make
+make install
 
 echo 'extension=imagick.so' >> /usr/local/php/lib/php.ini
 
-#ln -s /usr/lib64/php/modules/imagick.so /usr/local/php/lib/php/extensions/no-debug-non-zts-20151012/imagick.so
-
 service httpd restart
+service php-fpm restart

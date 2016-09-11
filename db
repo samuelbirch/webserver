@@ -53,4 +53,4 @@ EOF
 
 chkconfig mariadb on
 
-echo $DEFAULT_PASSWORD
+MYSQL_DEFAULT_PASS=$DEFAULT_PASSWORD

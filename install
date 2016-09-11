@@ -25,8 +25,8 @@ read USER
 # Vars
 #------------------------------------------------------------------------------------
 
-MYSQL_DEFAULT_PASS=a
-FTP_DEFAULT_PASS=a
+export MYSQL_DEFAULT_PASS=a
+export FTP_DEFAULT_PASS=a
 
 #------------------------------------------------------------------------------------
 # Setup
@@ -44,49 +44,49 @@ cd ~/scripts
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/apache
-bash apache $DOMAIN $SERVER_NAME $ADMIN_EMAIL
+. ./apache $DOMAIN $SERVER_NAME $ADMIN_EMAIL
 
 #------------------------------------------------------------------------------------
 # Install php
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/php
-bash php
+. ./php
 
 #------------------------------------------------------------------------------------
 # Install db
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/db
-MYSQL_DEFAULT_PASS=$(bash db $USER)
+. ./db $USER
 
 #------------------------------------------------------------------------------------
 # Install ftp
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/ftp
-FTP_DEFAULT_PASS=$(bash ftp $USER $SERVER_NAME.$DOMAIN)
+. ./ftp $USER $SERVER_NAME.$DOMAIN
 
 #------------------------------------------------------------------------------------
 # Install fail2ban
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/fail2ban
-bash fail2ban
+. ./fail2ban
 
 #------------------------------------------------------------------------------------
 # Install firewall
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/firewall
-bash firewall
+. ./firewall
 
 #------------------------------------------------------------------------------------
 # Install mail
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/mail
-bash mail $DOMAIN $MAIL_DOMAIN
+. ./mail $DOMAIN $MAIL_DOMAIN
 
 #------------------------------------------------------------------------------------
 # Download vhost
@@ -98,5 +98,6 @@ wget https://raw.githubusercontent.com/samuelbirch/webserver/master/vhost
 # Output
 #------------------------------------------------------------------------------------
 
-echo "All done! Your MYSQL password is $MYSQL_DEFAULT_PASS"
+echo "All done!"
+echo "Your MYSQL password is $MYSQL_DEFAULT_PASS"
 echo "Your FTP root password is $FTP_DEFAULT_PASS"

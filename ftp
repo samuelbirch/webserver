@@ -103,4 +103,4 @@ echo $(openssl passwd -crypt $FTP_PASS) >> /etc/vsftpd/password
 # /etc/vsftpd/password.db
 db_load -T -t hash -f /etc/vsftpd/password /etc/vsftpd/password.db
 
-echo $FTP_PASS
+FTP_DEFAULT_PASS=$FTP_PASS

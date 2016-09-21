@@ -86,7 +86,7 @@ wget https://raw.githubusercontent.com/samuelbirch/webserver/master/firewall
 #------------------------------------------------------------------------------------
 
 wget https://raw.githubusercontent.com/samuelbirch/webserver/master/mail
-. ./mail $DOMAIN $MAIL_DOMAIN
+. ./mail $DOMAIN $SERVER_NAME
 
 #------------------------------------------------------------------------------------
 # Download vhost

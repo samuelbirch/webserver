@@ -11,16 +11,112 @@ then
 	read DOMAIN
 fi
 
-MAIL_DOMAIN=$2
-if [ -z $MAIL_DOMAIN ]
+SERVER_NAME=$2
+if [ -z $SERVER_NAME ]
 then
-	echo -e "What is the mail subdomain: \c "
-	read MAIL_DOMAIN
+	echo -e "What is the server name: \c "
+	read SERVER_NAME
 fi
 
+
 #------------------------------------------------------------------------------------
-# Install postfix
+# POSTFIX
 #------------------------------------------------------------------------------------
 
-yum -y install postfix
+yum install -y postfix
+
+sed -i "s/^#myhostname \= host\.domain\.tld/myhostname = $SERVER_NAME.$DOMAIN/g" /etc/postfix/main.cf
+sed -i "s/^#mydomain.*/mydomain = $DOMAIN/g" /etc/postfix/main.cf
+sed -i '/myorigin \= $myhostname/s/^#//g' /etc/postfix/main.cf
+sed -i "/mynetworks_style \= host/s/^#//g" /etc/postfix/main.cf
+
+echo "
+smtp_use_tls = yes
+smtpd_use_tls = yes
+
+smtp_tls_security_level = encrypt
+smtpd_tls_security_level = encrypt
+smtp_tls_note_starttls_offer = yes
+
+smtpd_tls_protocols = !SSLv2, !SSLv3
+smtp_tls_protocols = !SSLv2, !SSLv3
+
+smtpd_tls_ciphers = high
+smtp_tls_ciphers = high
+
+smtpd_tls_cert_file = /etc/letsencrypt/live/$SERVER_NAME.$DOMAIN/fullchain.pem
+smtpd_tls_key_file = /etc/letsencrypt/live/$SERVER_NAME.$DOMAIN/privkey.pem
+smtp_tls_cert_file = /etc/letsencrypt/live/$SERVER_NAME.$DOMAIN/fullchain.pem
+smtp_tls_key_file = /etc/letsencrypt/live/$SERVER_NAME.$DOMAIN/privkey.pem
+
+smtpd_milters = inet:localhost:8891
+non_smtpd_milters = $smtpd_milters
+milter_default_action = accept
+
+smtp_tls_loglevel = 1
+" >> /etc/postfix/main.cf
+
+systemctl start postfix
+systemctl enable postfix
+
+#------------------------------------------------------------------------------------
+# OpenDKIM
+#------------------------------------------------------------------------------------
+
+yum install -y opendkim
+
+opendkim-genkey -b 2048 -d $DOMAIN -s $DOMAIN.dkim
+
+chown opendkim:opendkim /etc/opendkim/keys/$DOMAIN.dkim.private
+
+sed -i "s/^Mode.*/Mode sv/g" /etc/opendkim.conf
+sed -i "s/^Canonicalization.*/Canonicalization relaxed\/simple/g" /etc/opendkim.conf
+sed -i "s/^# Domain.*/Domain $DOMAIN/g" /etc/opendkim.conf
+sed -i "s/^# KeyTable.*/KeyTable \/etc\/opendkim\/KeyTable/g" /etc/opendkim.conf
+sed -i "/SigningTable/s/^# //g" /etc/opendkim.conf
+sed -i "/ExternalIgnoreList/s/^# //g" /etc/opendkim.conf
+sed -i "/InternalHosts/s/^# //g" /etc/opendkim.conf
+
+echo "
+default._domainkey.$DOMAIN $DOMAIN:default:/etc/opendkim/keys/$DOMAIN.dkim.private" >> /etc/opendkim/KeyTable
+
+echo "
+*@$DOMAIN default._domainkey.$DOMAIN
+*@$SERVER_NAME.$DOMAIN default._domainkey.$DOMAIN
+" >> /etc/opendkim/SigningTable
+
+echo "
+$SERVER_NAME.$DOMAIN
+$DOMAIN" >> /etc/opendkim/TrustedHosts 
+
+systemctl start opendkim
+systemctl enable opendkim
+
+systemctl restart postfix
+
+
+
+#------------------------------------------------------------------------------------
+# DNS
+#------------------------------------------------------------------------------------
+
+#TXT Records:
+#subdomain:
+#Text: v=spf1 a include:_spf.google.com ~all
+
+#*.domain.com. 1800 IN TXT "v=spf1 mx ip4:YOUR_MX_IP -all"
+#domain.com. 1800 IN TXT "v=spf1 mx ip4:YOUR_MX_IP -all"
+
+#subdomain: madebyjam.uk.dkim._domainkey
+#Text:
+
+#subdomain:
+#Text:
+
+#subdomain:
+#Text:
+
+
+
+#"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp2AVNegaUfy8fRSW6wRzaXXbqsfIgEwVLLZnmY5QC1+m5ZQ8HVSOaeTCKnqMkMq1ONP29Lfycss62HyJ2ru/gSeCk7LC7es7iylG72sJDZkqIR1c+zPNcASCBcd9wPfpecfR8dbWrqTSJlXg4X+HTVgqcJEuuAW4Cy+t6FpPZL1goN+z/gMnaofwnPy0+nn+LZgK7t511sekV4ZXOl2lQmlVcdQUDmnujCrUzYjDjg1Bu5CUCuVXUD/KMkOm/Xc/lHNdjt7TjdiMgUXFUk5yusIrqtZI5t0oC61xNw0LH34f0L1gsMt0hYGYfvIH1M7c3likBU4reKE1rhtjmm6CAQIDAQAB"
 

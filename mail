@@ -31,11 +31,34 @@ sed -i '/myorigin \= $myhostname/s/^#//g' /etc/postfix/main.cf
 sed -i "/mynetworks_style \= host/s/^#//g" /etc/postfix/main.cf
 
 echo "
+# TLS
 smtp_use_tls = yes
 smtpd_use_tls = yes
 
-smtp_tls_security_level = encrypt
-smtpd_tls_security_level = encrypt
+smtp_tls_security_level = may
+smtpd_tls_security_level = may
+
+smtpd_tls_auth_only = yes
+
+smtp_tls_cert_file = /etc/letsencrypt/live/$SERVER_NAME.$DOMAIN/fullchain.pem
+smtp_tls_key_file = /etc/letsencrypt/live/$SERVER_NAME.$DOMAIN/privkey.pem
+smtpd_tls_cert_file = /etc/letsencrypt/live/$SERVER_NAME.$DOMAIN/fullchain.pem
+smtpd_tls_key_file = /etc/letsencrypt/live/$SERVER_NAME.$DOMAIN/privkey.pem
+
+smtpd_tls_received_header = yes
+smtpd_tls_session_cache_timeout = 3600s
+tls_random_source = dev:/dev/urandom
+
+smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination, check_policy_service, unix:private/policy-spf
+
+policy-spf_time_limit = 3600s
+
+# DKIM
+milter_default_action = accept
+milter_protocol = 6
+smtpd_milters = inet:localhost:8891
+non_smtpd_milters = inet:localhost:8891
+
 smtp_tls_note_starttls_offer = yes
 
 smtpd_tls_protocols = !SSLv2, !SSLv3
@@ -44,17 +67,22 @@ smtp_tls_protocols = !SSLv2, !SSLv3
 smtpd_tls_ciphers = high
 smtp_tls_ciphers = high
 
-smtpd_tls_cert_file = /etc/letsencrypt/live/$SERVER_NAME.$DOMAIN/fullchain.pem
-smtpd_tls_key_file = /etc/letsencrypt/live/$SERVER_NAME.$DOMAIN/privkey.pem
-smtp_tls_cert_file = /etc/letsencrypt/live/$SERVER_NAME.$DOMAIN/fullchain.pem
-smtp_tls_key_file = /etc/letsencrypt/live/$SERVER_NAME.$DOMAIN/privkey.pem
-
-smtpd_milters = inet:localhost:8891
-non_smtpd_milters = $smtpd_milters
-milter_default_action = accept
-
 smtp_tls_loglevel = 1
+smtpd_tls_loglevel = 1
 " >> /etc/postfix/main.cf
+
+sed -i "/submission inet/s/^#//g" /etc/postfix/master.cf
+sed -i "/syslog_name/s/^#//g" /etc/postfix/master.cf
+sed -i "/smtpd_tls_security_level/s/^#//g" /etc/postfix/master.cf
+sed -i "/smtpd_sasl_auth_enable/s/^#//g" /etc/postfix/master.cf
+sed -i "/smtpd_reject_unlisted_recipient/s/^#//g" /etc/postfix/master.cf
+sed -i "/smtpd_recipient_restrictions/s/^#//g" /etc/postfix/master.cf
+sed -i "/milter_macro_daemon_name/s/^#//g" /etc/postfix/master.cf
+
+echo "
+policy-spf  unix  -       n       n       -       -       spawn
+     user=nobody argv=/usr/libexec/postfix/policyd-spf
+" >> /etc/postfix/master.cf
 
 systemctl start postfix
 systemctl enable postfix
@@ -65,9 +93,9 @@ systemctl enable postfix
 
 yum install -y opendkim
 
-opendkim-genkey -b 2048 -d $DOMAIN -s $DOMAIN.dkim
+opendkim-genkey -b 2048 -d $DOMAIN -s default
 
-chown opendkim:opendkim /etc/opendkim/keys/$DOMAIN.dkim.private
+chown opendkim:opendkim /etc/opendkim/keys/default.private
 
 sed -i "s/^Mode.*/Mode sv/g" /etc/opendkim.conf
 sed -i "s/^Canonicalization.*/Canonicalization relaxed\/simple/g" /etc/opendkim.conf
@@ -78,7 +106,7 @@ sed -i "/ExternalIgnoreList/s/^# //g" /etc/opendkim.conf
 sed -i "/InternalHosts/s/^# //g" /etc/opendkim.conf
 
 echo "
-default._domainkey.$DOMAIN $DOMAIN:default:/etc/opendkim/keys/$DOMAIN.dkim.private" >> /etc/opendkim/KeyTable
+default._domainkey.$DOMAIN $DOMAIN:default:/etc/opendkim/keys/default.private" >> /etc/opendkim/KeyTable
 
 echo "
 *@$DOMAIN default._domainkey.$DOMAIN
@@ -86,8 +114,9 @@ echo "
 " >> /etc/opendkim/SigningTable
 
 echo "
+$DOMAIN
 $SERVER_NAME.$DOMAIN
-$DOMAIN" >> /etc/opendkim/TrustedHosts 
+" >> /etc/opendkim/TrustedHosts 
 
 systemctl start opendkim
 systemctl enable opendkim
